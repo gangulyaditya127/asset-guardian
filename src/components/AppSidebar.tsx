@@ -4,26 +4,26 @@ import {
   Server,
   AlertTriangle,
   Settings,
-  ScrollText,
   Shield,
   RefreshCw,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useSyncContext } from "@/context/SyncContext";
+import { formatDistanceToNow } from "date-fns";
 
 const navItems = [
   { to: "/", icon: LayoutDashboard, label: "Dashboard" },
   { to: "/inventory", icon: Server, label: "Inventory" },
   { to: "/gaps", icon: AlertTriangle, label: "Gaps" },
-  { to: "/logs", icon: ScrollText, label: "Logs" },
   { to: "/settings", icon: Settings, label: "Settings" },
 ];
 
 export function AppSidebar() {
   const location = useLocation();
+  const { lastSyncTime, status } = useSyncContext();
 
   return (
     <aside className="fixed left-0 top-0 z-40 flex h-screen w-60 flex-col bg-sidebar border-r border-sidebar-border">
-      {/* Logo */}
       <div className="flex h-14 items-center gap-2.5 px-5 border-b border-sidebar-border">
         <Shield className="h-5 w-5 text-sidebar-primary" />
         <span className="text-sm font-bold tracking-tight text-sidebar-accent-foreground">
@@ -31,7 +31,6 @@ export function AppSidebar() {
         </span>
       </div>
 
-      {/* Navigation */}
       <nav className="flex-1 px-3 py-4 space-y-0.5">
         {navItems.map((item) => {
           const isActive =
@@ -57,11 +56,16 @@ export function AppSidebar() {
         })}
       </nav>
 
-      {/* Sync status footer */}
       <div className="border-t border-sidebar-border px-4 py-3">
         <div className="flex items-center gap-2 text-[11px] text-sidebar-muted">
-          <RefreshCw className="h-3 w-3" />
-          <span>Last sync: 12 min ago</span>
+          <RefreshCw className={cn("h-3 w-3", status === "syncing" && "animate-spin")} />
+          <span>
+            {status === "syncing"
+              ? "Syncing…"
+              : lastSyncTime
+              ? `Last sync: ${formatDistanceToNow(lastSyncTime, { addSuffix: true })}`
+              : "Not synced yet"}
+          </span>
         </div>
       </div>
     </aside>
