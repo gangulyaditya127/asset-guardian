@@ -6,6 +6,7 @@ import {
   Settings,
   Shield,
   RefreshCw,
+  FileText,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSyncContext } from "@/context/SyncContext";
