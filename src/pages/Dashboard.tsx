@@ -8,6 +8,7 @@ import { format } from "date-fns";
 export default function Dashboard() {
   const { status, error, nexposeData, sentinelData, gapData, lastSyncTime, runSync } = useSyncContext();
   const syncing = status === "syncing";
+  const loading = status === "loading";
 
   const nexposeCount = nexposeData?.ip_count ?? 0;
   const sentinelCount = sentinelData?.row_count ?? 0;
