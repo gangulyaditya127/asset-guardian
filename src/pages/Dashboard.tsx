@@ -24,9 +24,9 @@ export default function Dashboard() {
             Asset correlation overview across Nexpose and Sentinel
           </p>
         </div>
-        <Button onClick={runSync} disabled={syncing} className="gap-2">
+        <Button onClick={runSync} disabled={syncing || loading} className="gap-2">
           <RefreshCw className={`h-4 w-4 ${syncing ? "animate-spin" : ""}`} />
-          {syncing ? "Syncing…" : "Run Sync"}
+          {loading ? "Loading…" : syncing ? "Syncing…" : "Run Sync"}
         </Button>
       </div>
 

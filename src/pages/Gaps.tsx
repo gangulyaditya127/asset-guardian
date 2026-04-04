@@ -57,7 +57,7 @@ export default function Gaps() {
     }
   };
 
-  const noData = status === "idle" || gapRows.length === 0;
+  const noData = (status === "idle" || status === "loading") || gapRows.length === 0;
 
   // Show first 6 columns dynamically
   const columns = gapData?.data?.[0] ? Object.keys(gapData.data[0]).slice(0, 6) : [];
