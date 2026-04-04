@@ -6,6 +6,7 @@ import {
   Settings,
   Shield,
   RefreshCw,
+  FileText,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSyncContext } from "@/context/SyncContext";
@@ -15,6 +16,7 @@ const navItems = [
   { to: "/", icon: LayoutDashboard, label: "Dashboard" },
   { to: "/inventory", icon: Server, label: "Inventory" },
   { to: "/gaps", icon: AlertTriangle, label: "Gaps" },
+  { to: "/logs", icon: FileText, label: "Logs" },
   { to: "/settings", icon: Settings, label: "Settings" },
 ];
 

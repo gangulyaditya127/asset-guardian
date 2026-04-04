@@ -8,6 +8,7 @@ import { format } from "date-fns";
 export default function Dashboard() {
   const { status, error, nexposeData, sentinelData, gapData, lastSyncTime, runSync } = useSyncContext();
   const syncing = status === "syncing";
+  const loading = status === "loading";
 
   const nexposeCount = nexposeData?.ip_count ?? 0;
   const sentinelCount = sentinelData?.row_count ?? 0;
@@ -23,9 +24,9 @@ export default function Dashboard() {
             Asset correlation overview across Nexpose and Sentinel
           </p>
         </div>
-        <Button onClick={runSync} disabled={syncing} className="gap-2">
+        <Button onClick={runSync} disabled={syncing || loading} className="gap-2">
           <RefreshCw className={`h-4 w-4 ${syncing ? "animate-spin" : ""}`} />
-          {syncing ? "Syncing…" : "Run Sync"}
+          {loading ? "Loading…" : syncing ? "Syncing…" : "Run Sync"}
         </Button>
       </div>
 

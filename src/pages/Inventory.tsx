@@ -26,7 +26,7 @@ export default function Inventory() {
     );
   });
 
-  const noData = status === "idle";
+  const noData = status === "idle" || status === "loading";
 
   return (
     <AppLayout>
