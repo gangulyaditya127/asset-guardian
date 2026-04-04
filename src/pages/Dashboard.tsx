@@ -42,7 +42,7 @@ export default function Dashboard() {
         <StatCard
           label="Nexpose Assets"
           value={nexposeCount}
-          subtitle={nexposeData ? `${nexposeData.site_ids_processed.length} sites processed` : "No data yet"}
+          subtitle={nexposeData ? `${nexposeData.site_ids_processed?.length ?? 0} sites processed` : "No data yet"}
           icon={<Server className="h-4 w-4" />}
         />
         <StatCard
