@@ -4,9 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Switch } from "@/components/ui/switch";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Eye, EyeOff, Save, Trash2, Plus, Loader2, Clock } from "lucide-react";
+import { Eye, EyeOff, Save, Trash2, Plus, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import {
   fetchNexposeCredentials,
@@ -14,22 +12,9 @@ import {
   fetchOwnerMappings,
   addOwnerMapping,
   deleteOwnerMapping,
-  fetchSchedulerStatus,
-  updateScheduler,
   type NexposeCredentials,
   type OwnerMapping,
-  type SchedulerStatus,
 } from "@/services/api";
-
-const FREQUENCY_OPTIONS = [
-  { value: "2min", label: "Every 2 Minutes" },
-  { value: "5min", label: "Every 5 Minutes" },
-  { value: "hourly", label: "Every Hour" },
-  { value: "6hour", label: "Every 6 Hours" },
-  { value: "12hour", label: "Every 12 Hours" },
-  { value: "daily", label: "Daily" },
-  { value: "weekly", label: "Weekly" },
-];
 
 export default function SettingsPage() {
   // ── Nexpose Credentials ──
@@ -125,45 +110,12 @@ export default function SettingsPage() {
     }
   };
 
-  // ── Scheduler ──
-  const [schedEnabled, setSchedEnabled] = useState(false);
-  const [schedFrequency, setSchedFrequency] = useState("daily");
-  const [schedNextRun, setSchedNextRun] = useState<string | null>(null);
-  const [schedLoading, setSchedLoading] = useState(true);
-  const [schedSaving, setSchedSaving] = useState(false);
-
-  useEffect(() => {
-    fetchSchedulerStatus()
-      .then((s) => {
-        setSchedEnabled(s.enabled);
-        if (s.frequency) setSchedFrequency(s.frequency);
-        setSchedNextRun(s.next_run_time);
-      })
-      .catch(() => {})
-      .finally(() => setSchedLoading(false));
-  }, []);
-
-  const handleSchedulerSave = async () => {
-    setSchedSaving(true);
-    try {
-      const res = await updateScheduler({ frequency: schedFrequency, enabled: schedEnabled });
-      toast.success(schedEnabled ? "Scheduler enabled" : "Scheduler disabled");
-      // Refresh status to get next_run_time
-      const updated = await fetchSchedulerStatus();
-      setSchedNextRun(updated.next_run_time);
-    } catch (err: any) {
-      toast.error(err.message);
-    } finally {
-      setSchedSaving(false);
-    }
-  };
-
   return (
     <AppLayout>
       <div className="mb-6">
         <h1 className="text-xl font-bold text-foreground">Settings</h1>
         <p className="text-[13px] text-muted-foreground">
-          Configure API credentials, owner mappings, and scheduler
+          Configure API credentials and owner mappings
         </p>
       </div>
 
@@ -171,7 +123,6 @@ export default function SettingsPage() {
         <TabsList className="mb-6">
           <TabsTrigger value="credentials" className="text-[13px]">Nexpose Credentials</TabsTrigger>
           <TabsTrigger value="owners" className="text-[13px]">Owner Mappings</TabsTrigger>
-          <TabsTrigger value="scheduler" className="text-[13px]">Scheduler</TabsTrigger>
         </TabsList>
 
         {/* ── Nexpose Credentials ── */}
@@ -331,61 +282,6 @@ export default function SettingsPage() {
                   )}
                 </tbody>
               </table>
-            )}
-          </div>
-        </TabsContent>
-
-        {/* ── Scheduler ── */}
-        <TabsContent value="scheduler" className="space-y-6">
-          <div className="rounded-lg border border-border bg-card p-5 space-y-5">
-            <div className="flex items-center gap-2">
-              <Clock className="h-4 w-4 text-muted-foreground" />
-              <h3 className="text-[14px] font-semibold text-foreground">Auto Sync Scheduler</h3>
-            </div>
-
-            {schedLoading ? (
-              <div className="flex items-center gap-2 text-[13px] text-muted-foreground">
-                <Loader2 className="h-4 w-4 animate-spin" /> Loading…
-              </div>
-            ) : (
-              <>
-                <div className="flex items-center justify-between rounded-md border border-border bg-muted/30 px-4 py-3">
-                  <div>
-                    <p className="text-[13px] font-medium text-foreground">Enable Scheduler</p>
-                    <p className="text-[12px] text-muted-foreground">Automatically run sync at the selected frequency</p>
-                  </div>
-                  <Switch checked={schedEnabled} onCheckedChange={setSchedEnabled} />
-                </div>
-
-                {schedEnabled && (
-                  <div className="space-y-1.5">
-                    <Label className="text-[12px]">Frequency</Label>
-                    <Select value={schedFrequency} onValueChange={setSchedFrequency}>
-                      <SelectTrigger className="h-9 text-[13px] max-w-xs">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {FREQUENCY_OPTIONS.map((opt) => (
-                          <SelectItem key={opt.value} value={opt.value} className="text-[13px]">
-                            {opt.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
-
-                {schedNextRun && schedEnabled && (
-                  <p className="text-[12px] text-muted-foreground">
-                    Next run: <span className="font-mono text-foreground">{schedNextRun}</span>
-                  </p>
-                )}
-
-                <Button size="sm" className="gap-2" onClick={handleSchedulerSave} disabled={schedSaving}>
-                  {schedSaving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
-                  Save Scheduler Config
-                </Button>
-              </>
             )}
           </div>
         </TabsContent>
