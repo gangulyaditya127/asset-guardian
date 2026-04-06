@@ -200,3 +200,30 @@ export async function deleteOwnerMapping(ownerKey: string): Promise<{ message: s
   if (!res.ok) throw new Error(`Delete owner mapping failed: ${res.statusText}`);
   return res.json();
 }
+
+// ── Scheduler ──
+
+export interface SchedulerStatus {
+  frequency: string | null;
+  enabled: boolean;
+  next_run_time: string | null;
+}
+
+export async function fetchSchedulerStatus(): Promise<SchedulerStatus> {
+  const res = await fetch(`${API_BASE_URL}/scheduler/status`);
+  if (!res.ok) throw new Error(`Scheduler status API failed: ${res.statusText}`);
+  return res.json();
+}
+
+export async function updateScheduler(payload: {
+  frequency: string;
+  enabled: boolean;
+}): Promise<{ status: string; frequency: string | null; enabled: boolean }> {
+  const res = await fetch(`${API_BASE_URL}/scheduler/update`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) throw new Error(`Scheduler update failed: ${res.statusText}`);
+  return res.json();
+}
