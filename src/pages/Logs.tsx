@@ -38,6 +38,9 @@ export default function Logs() {
                 <th className="px-4 py-2 text-left font-medium text-muted-foreground">Nexpose</th>
                 <th className="px-4 py-2 text-left font-medium text-muted-foreground">Sentinel</th>
                 <th className="px-4 py-2 text-left font-medium text-muted-foreground">Gaps</th>
+                <th className="px-4 py-2 text-left font-medium text-muted-foreground">Nex File</th>
+                <th className="px-4 py-2 text-left font-medium text-muted-foreground">Sentinel File</th>
+                <th className="px-4 py-2 text-left font-medium text-muted-foreground">Gap File</th>
                 <th className="px-4 py-2 text-left font-medium text-muted-foreground">Error</th>
               </tr>
             </thead>
