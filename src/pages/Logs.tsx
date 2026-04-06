@@ -65,6 +65,9 @@ export default function Logs() {
                   <td className="px-4 py-2.5 font-mono text-[12px]">{r.Nex_Count || "—"}</td>
                   <td className="px-4 py-2.5 font-mono text-[12px]">{r.Sen_Coount || "—"}</td>
                   <td className="px-4 py-2.5 font-mono text-[12px]">{r.Gap_Count || "—"}</td>
+                  <td className="px-4 py-2.5 font-mono text-[12px] max-w-[160px] truncate" title={r.Nex_FileName || ""}>{r.Nex_FileName || "—"}</td>
+                  <td className="px-4 py-2.5 font-mono text-[12px] max-w-[160px] truncate" title={r.Sent_FileName || ""}>{r.Sent_FileName || "—"}</td>
+                  <td className="px-4 py-2.5 font-mono text-[12px] max-w-[160px] truncate" title={r.Gap_FileName || ""}>{r.Gap_FileName || "—"}</td>
                   <td className="px-4 py-2.5 text-[12px] text-destructive max-w-[200px] truncate">
                     {r.Error || "—"}
                   </td>
