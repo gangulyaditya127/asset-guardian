@@ -66,6 +66,7 @@ export default function Gaps() {
     try {
       const res = await sendAutoMail(selectedRows);
       toast.success(`Notifications sent to ${res.owners_processed} owner(s)`);
+      downloadMailBodies(res.results);
       setSelectedIndices(new Set());
     } catch (err: any) {
       toast.error(err.message || "Failed to send notifications");
