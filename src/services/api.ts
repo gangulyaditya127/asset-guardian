@@ -120,6 +120,12 @@ export async function fetchFirstRecord(): Promise<FirstRecordResponse> {
   return res.json();
 }
 
+export async function fetchRecordById(recordId: number): Promise<FirstRecordResponse> {
+  const res = await fetch(`${API_BASE_URL}/records/by-id/${recordId}`);
+  if (!res.ok) throw new Error(`Record by ID API failed: ${res.statusText}`);
+  return res.json();
+}
+
 export async function fetchAllRecords(): Promise<FileStatusRecord[]> {
   const res = await fetch(`${API_BASE_URL}/records/`);
   if (!res.ok) throw new Error(`Records API failed: ${res.statusText}`);
