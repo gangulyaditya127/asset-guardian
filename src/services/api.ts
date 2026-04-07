@@ -43,7 +43,9 @@ export interface SendMailResponse {
     cc?: string[];
     asset_count?: number;
     status?: string;
+    mail_status?: string;
     error?: string;
+    mail_body_html?: string;
   }>;
 }
 

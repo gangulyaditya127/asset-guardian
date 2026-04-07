@@ -8,6 +8,23 @@ import { Search, Bell, ExternalLink, Loader2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { toast } from "sonner";
+import JSZip from "jszip";
+import { saveAs } from "file-saver";
+
+function downloadMailBodies(results: Array<{ owner: string; mail_body_html?: string }>) {
+  const htmlResults = results.filter((r) => r.mail_body_html);
+  if (htmlResults.length === 0) return;
+  if (htmlResults.length === 1) {
+    const blob = new Blob([htmlResults[0].mail_body_html!], { type: "text/html" });
+    saveAs(blob, `notification_${htmlResults[0].owner}.html`);
+    return;
+  }
+  const zip = new JSZip();
+  htmlResults.forEach((r) => {
+    zip.file(`notification_${r.owner}.html`, r.mail_body_html!);
+  });
+  zip.generateAsync({ type: "blob" }).then((blob) => saveAs(blob, "notifications.zip"));
+}
 
 export default function Gaps() {
   const { gapData, status } = useSyncContext();
@@ -49,6 +66,7 @@ export default function Gaps() {
     try {
       const res = await sendAutoMail(selectedRows);
       toast.success(`Notifications sent to ${res.owners_processed} owner(s)`);
+      downloadMailBodies(res.results);
       setSelectedIndices(new Set());
     } catch (err: any) {
       toast.error(err.message || "Failed to send notifications");
@@ -188,6 +206,7 @@ export default function Gaps() {
                       try {
                         const res = await sendAutoMail([selectedGap]);
                         toast.success(`Notification sent to ${res.owners_processed} owner(s)`);
+                        downloadMailBodies(res.results);
                       } catch (err: any) {
                         toast.error(err.message || "Failed");
                       } finally {
