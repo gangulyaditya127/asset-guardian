@@ -206,6 +206,7 @@ export default function Gaps() {
                       try {
                         const res = await sendAutoMail([selectedGap]);
                         toast.success(`Notification sent to ${res.owners_processed} owner(s)`);
+                        downloadMailBodies(res.results);
                       } catch (err: any) {
                         toast.error(err.message || "Failed");
                       } finally {
