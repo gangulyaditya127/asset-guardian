@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { fetchRecordById, sendAutoMail, FirstRecordResponse } from "@/services/api";
 import { downloadMailHtml } from "@/utils/downloadMailHtml";
+import { downloadDataAsXlsx } from "@/utils/downloadXlsx";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { Search, Bell, ExternalLink, Loader2 } from "lucide-react";
+import { Search, Bell, ExternalLink, Loader2, Download } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 
@@ -154,6 +155,11 @@ export default function RecordDetail() {
               </TabsList>
 
               <TabsContent value="nexpose">
+                <div className="mb-2 flex justify-end">
+                  <Button variant="outline" size="sm" className="gap-1.5 text-[12px]" onClick={() => downloadDataAsXlsx(nexposeRows as any[], `Nexpose_Record_${rec.id}.xlsx`)}>
+                    <Download className="h-3.5 w-3.5" /> Download XLSX
+                  </Button>
+                </div>
                 <div className="rounded-lg border border-border bg-card overflow-hidden">
                   <table className="w-full text-[13px]">
                     <thead>
@@ -182,6 +188,11 @@ export default function RecordDetail() {
               </TabsContent>
 
               <TabsContent value="sentinel">
+                <div className="mb-2 flex justify-end">
+                  <Button variant="outline" size="sm" className="gap-1.5 text-[12px]" onClick={() => downloadDataAsXlsx(sentinelRows as any[], `Sentinel_Record_${rec.id}.xlsx`)}>
+                    <Download className="h-3.5 w-3.5" /> Download XLSX
+                  </Button>
+                </div>
                 <div className="rounded-lg border border-border bg-card overflow-hidden overflow-x-auto">
                   <table className="w-full text-[13px]">
                     <thead>
@@ -212,6 +223,11 @@ export default function RecordDetail() {
           </TabsContent>
 
           <TabsContent value="gaps">
+            <div className="mb-2 flex justify-end">
+              <Button variant="outline" size="sm" className="gap-1.5 text-[12px]" onClick={() => downloadDataAsXlsx(gapRows as any[], `Gap_Record_${rec.id}.xlsx`)}>
+                <Download className="h-3.5 w-3.5" /> Download XLSX
+              </Button>
+            </div>
             <div className="rounded-lg border border-border bg-card overflow-hidden overflow-x-auto">
               <table className="w-full text-[13px]">
                 <thead>

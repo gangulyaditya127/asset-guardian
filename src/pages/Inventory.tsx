@@ -3,7 +3,9 @@ import { AppLayout } from "@/components/AppLayout";
 import { useSyncContext } from "@/context/SyncContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Search, Download } from "lucide-react";
+import { downloadDataAsXlsx } from "@/utils/downloadXlsx";
 
 export default function Inventory() {
   const { nexposeData, sentinelData, status } = useSyncContext();
@@ -68,6 +70,11 @@ export default function Inventory() {
             </TabsList>
 
             <TabsContent value="nexpose">
+              <div className="mb-2 flex justify-end">
+                <Button variant="outline" size="sm" className="gap-1.5 text-[12px]" onClick={() => downloadDataAsXlsx(nexposeRows, "Nexpose_Assets.xlsx")}>
+                  <Download className="h-3.5 w-3.5" /> Download XLSX
+                </Button>
+              </div>
               <div className="rounded-lg border border-border bg-card overflow-hidden">
                 <table className="w-full text-[13px]">
                   <thead>
@@ -89,9 +96,7 @@ export default function Inventory() {
                     ))}
                     {filteredNexpose.length === 0 && (
                       <tr>
-                        <td colSpan={4} className="px-4 py-8 text-center text-muted-foreground text-[13px]">
-                          No results
-                        </td>
+                        <td colSpan={4} className="px-4 py-8 text-center text-muted-foreground text-[13px]">No results</td>
                       </tr>
                     )}
                   </tbody>
@@ -100,14 +105,17 @@ export default function Inventory() {
             </TabsContent>
 
             <TabsContent value="sentinel">
+              <div className="mb-2 flex justify-end">
+                <Button variant="outline" size="sm" className="gap-1.5 text-[12px]" onClick={() => downloadDataAsXlsx(sentinelRows, "Sentinel_Assets.xlsx")}>
+                  <Download className="h-3.5 w-3.5" /> Download XLSX
+                </Button>
+              </div>
               <div className="rounded-lg border border-border bg-card overflow-hidden overflow-x-auto">
                 <table className="w-full text-[13px]">
                   <thead>
                     <tr className="border-b border-border bg-muted/50">
                       {(sentinelData?.columns ?? []).slice(0, 8).map((col) => (
-                        <th key={col} className="px-4 py-2 text-left font-medium text-muted-foreground whitespace-nowrap">
-                          {col}
-                        </th>
+                        <th key={col} className="px-4 py-2 text-left font-medium text-muted-foreground whitespace-nowrap">{col}</th>
                       ))}
                     </tr>
                   </thead>
@@ -123,9 +131,7 @@ export default function Inventory() {
                     ))}
                     {filteredSentinel.length === 0 && (
                       <tr>
-                        <td colSpan={8} className="px-4 py-8 text-center text-muted-foreground text-[13px]">
-                          No results
-                        </td>
+                        <td colSpan={8} className="px-4 py-8 text-center text-muted-foreground text-[13px]">No results</td>
                       </tr>
                     )}
                   </tbody>
