@@ -36,14 +36,18 @@ export interface CompareApiResponse {
 
 export interface SendMailResponse {
   message: string;
+  run_id?: string;
   owners_processed: number;
   results: Array<{
     owner: string;
     to: string[];
     cc?: string[];
+    run_id?: string;
+    mail_status?: string;
     asset_count?: number;
     status?: string;
     error?: string;
+    mail_body_html?: string;
   }>;
 }
 
