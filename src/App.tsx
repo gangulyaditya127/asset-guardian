@@ -9,6 +9,7 @@ import Inventory from "./pages/Inventory";
 import Gaps from "./pages/Gaps";
 import Logs from "./pages/Logs";
 import SettingsPage from "./pages/Settings";
+import RecordDetail from "./pages/RecordDetail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
