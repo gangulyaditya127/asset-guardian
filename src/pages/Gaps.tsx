@@ -3,9 +3,10 @@ import { AppLayout } from "@/components/AppLayout";
 import { useSyncContext } from "@/context/SyncContext";
 import { sendAutoMail } from "@/services/api";
 import { downloadMailHtml } from "@/utils/downloadMailHtml";
+import { downloadDataAsXlsx } from "@/utils/downloadXlsx";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Bell, ExternalLink, Loader2 } from "lucide-react";
+import { Search, Bell, ExternalLink, Loader2, Download } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { toast } from "sonner";
@@ -73,12 +74,19 @@ export default function Gaps() {
             IPs detected in Sentinel but missing from Nexpose inventory
           </p>
         </div>
-        {selectedIndices.size > 0 && (
-          <Button className="gap-2" onClick={handleNotify} disabled={notifying}>
-            {notifying ? <Loader2 className="h-4 w-4 animate-spin" /> : <Bell className="h-4 w-4" />}
-            Notify Owners ({selectedIndices.size})
-          </Button>
-        )}
+        <div className="flex items-center gap-2">
+          {gapRows.length > 0 && (
+            <Button variant="outline" size="sm" className="gap-1.5 text-[12px]" onClick={() => downloadDataAsXlsx(gapRows, "Gap_Assets.xlsx")}>
+              <Download className="h-3.5 w-3.5" /> Download XLSX
+            </Button>
+          )}
+          {selectedIndices.size > 0 && (
+            <Button className="gap-2" onClick={handleNotify} disabled={notifying}>
+              {notifying ? <Loader2 className="h-4 w-4 animate-spin" /> : <Bell className="h-4 w-4" />}
+              Notify Owners ({selectedIndices.size})
+            </Button>
+          )}
+        </div>
       </div>
 
       {noData && status !== "syncing" && (
