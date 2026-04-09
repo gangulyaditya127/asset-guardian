@@ -43,9 +43,7 @@ export interface SendMailResponse {
     cc?: string[];
     asset_count?: number;
     status?: string;
-    mail_status?: string;
     error?: string;
-    mail_body_html?: string;
   }>;
 }
 
@@ -119,12 +117,6 @@ export interface FileStatusCreate {
 export async function fetchFirstRecord(): Promise<FirstRecordResponse> {
   const res = await fetch(`${API_BASE_URL}/firstrecord/`);
   if (!res.ok) throw new Error(`First record API failed: ${res.statusText}`);
-  return res.json();
-}
-
-export async function fetchRecordById(recordId: number): Promise<FirstRecordResponse> {
-  const res = await fetch(`${API_BASE_URL}/records/by-id/${recordId}`);
-  if (!res.ok) throw new Error(`Record by ID API failed: ${res.statusText}`);
   return res.json();
 }
 
