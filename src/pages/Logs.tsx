@@ -2,9 +2,44 @@ import { AppLayout } from "@/components/AppLayout";
 import { useSyncContext } from "@/context/SyncContext";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
+import { Copy, ExternalLink } from "lucide-react";
+import { toast } from "sonner";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+
+function CopyableCell({ value }: { value: string | null }) {
+  if (!value) return <span className="text-muted-foreground">—</span>;
+
+  const handleCopy = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(value);
+    toast.success("Copied to clipboard");
+  };
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <button
+          onClick={handleCopy}
+          className="flex items-center gap-1.5 group text-left max-w-[180px]"
+        >
+          <span className="truncate text-[12px]">{value}</span>
+          <Copy className="h-3 w-3 shrink-0 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+        </button>
+      </TooltipTrigger>
+      <TooltipContent side="top" className="max-w-[300px] break-all text-[11px]">
+        <p>{value}</p>
+        <p className="text-muted-foreground mt-1">Click to copy</p>
+      </TooltipContent>
+    </Tooltip>
+  );
+}
 
 export default function Logs() {
   const { records, status } = useSyncContext();
+
+  const openRecordDetail = (recordId: number) => {
+    window.open(`/record/${recordId}`, "_blank");
+  };
 
   return (
     <AppLayout>
@@ -42,6 +77,7 @@ export default function Logs() {
                 <th className="px-4 py-2 text-left font-medium text-muted-foreground">Sentinel File</th>
                 <th className="px-4 py-2 text-left font-medium text-muted-foreground">Gap File</th>
                 <th className="px-4 py-2 text-left font-medium text-muted-foreground">Error</th>
+                <th className="px-4 py-2 w-10"></th>
               </tr>
             </thead>
             <tbody>
@@ -65,17 +101,24 @@ export default function Logs() {
                   <td className="px-4 py-2.5 font-mono text-[12px]">{r.Nex_Count || "—"}</td>
                   <td className="px-4 py-2.5 font-mono text-[12px]">{r.Sen_Coount || "—"}</td>
                   <td className="px-4 py-2.5 font-mono text-[12px]">{r.Gap_Count || "—"}</td>
-                  <td className="px-4 py-2.5 text-[12px] max-w-[160px] truncate" title={r.Nex_FileName || ""}>
-                    {r.Nex_FileName || "—"}
-                  </td>
-                  <td className="px-4 py-2.5 text-[12px] max-w-[160px] truncate" title={r.Sent_FileName || ""}>
-                    {r.Sent_FileName || "—"}
-                  </td>
-                  <td className="px-4 py-2.5 text-[12px] max-w-[160px] truncate" title={r.Gap_FileName || ""}>
-                    {r.Gap_FileName || "—"}
-                  </td>
+                  <td className="px-4 py-2.5"><CopyableCell value={r.Nex_FileName} /></td>
+                  <td className="px-4 py-2.5"><CopyableCell value={r.Sent_FileName} /></td>
+                  <td className="px-4 py-2.5"><CopyableCell value={r.Gap_FileName} /></td>
                   <td className="px-4 py-2.5 text-[12px] text-destructive max-w-[200px] truncate">
                     {r.Error || "—"}
+                  </td>
+                  <td className="px-4 py-2.5">
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          onClick={() => openRecordDetail(r.id)}
+                          className="p-1 rounded hover:bg-muted transition-colors"
+                        >
+                          <ExternalLink className="h-3.5 w-3.5 text-muted-foreground hover:text-foreground" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent>View record details</TooltipContent>
+                    </Tooltip>
                   </td>
                 </tr>
               ))}
