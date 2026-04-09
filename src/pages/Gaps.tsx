@@ -2,6 +2,7 @@ import { useState } from "react";
 import { AppLayout } from "@/components/AppLayout";
 import { useSyncContext } from "@/context/SyncContext";
 import { sendAutoMail } from "@/services/api";
+import { downloadMailHtml } from "@/utils/downloadMailHtml";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, Bell, ExternalLink, Loader2 } from "lucide-react";
@@ -49,6 +50,7 @@ export default function Gaps() {
     try {
       const res = await sendAutoMail(selectedRows);
       toast.success(`Notifications sent to ${res.owners_processed} owner(s)`);
+      await downloadMailHtml(res.results);
       setSelectedIndices(new Set());
     } catch (err: any) {
       toast.error(err.message || "Failed to send notifications");
@@ -188,6 +190,7 @@ export default function Gaps() {
                       try {
                         const res = await sendAutoMail([selectedGap]);
                         toast.success(`Notification sent to ${res.owners_processed} owner(s)`);
+                        await downloadMailHtml(res.results);
                       } catch (err: any) {
                         toast.error(err.message || "Failed");
                       } finally {
