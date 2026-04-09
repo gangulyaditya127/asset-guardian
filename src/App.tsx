@@ -27,6 +27,7 @@ const App = () => (
             <Route path="/gaps" element={<Gaps />} />
             <Route path="/logs" element={<Logs />} />
             <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/record/:id" element={<RecordDetail />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
