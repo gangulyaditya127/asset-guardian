@@ -1,13 +1,11 @@
 import { useState } from "react";
 import { AppLayout } from "@/components/AppLayout";
 import { useSyncContext } from "@/context/SyncContext";
-import { sendAutoMail } from "@/services/api";
+import { sendAutoMail, downloadFromUrl } from "@/services/api";
 import { downloadMailHtml } from "@/utils/downloadMailHtml";
-import { downloadDataAsXlsx } from "@/utils/downloadXlsx";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, Bell, ExternalLink, Loader2, Download } from "lucide-react";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { toast } from "sonner";
 
@@ -15,10 +13,9 @@ export default function Gaps() {
   const { gapData, status } = useSyncContext();
   const [search, setSearch] = useState("");
   const [selectedGap, setSelectedGap] = useState<Record<string, any> | null>(null);
-  const [selectedIndices, setSelectedIndices] = useState<Set<number>>(new Set());
   const [notifying, setNotifying] = useState(false);
 
-  const gapRows = gapData?.data ?? [];
+  const gapRows = gapData?.preview_data ?? gapData?.data ?? [];
 
   const filtered = gapRows
     .map((row, idx) => ({ row, idx }))
@@ -29,30 +26,16 @@ export default function Gaps() {
       );
     });
 
-  const toggleSelection = (idx: number) => {
-    const next = new Set(selectedIndices);
-    if (next.has(idx)) next.delete(idx);
-    else next.add(idx);
-    setSelectedIndices(next);
-  };
-
-  const toggleAll = () => {
-    if (selectedIndices.size === filtered.length) {
-      setSelectedIndices(new Set());
-    } else {
-      setSelectedIndices(new Set(filtered.map((f) => f.idx)));
-    }
-  };
-
   const handleNotify = async () => {
-    const selectedRows = gapRows.filter((_, i) => selectedIndices.has(i));
-    if (selectedRows.length === 0) return;
+    if (!gapData?.output_file) {
+      toast.error("No gap file available to send");
+      return;
+    }
     setNotifying(true);
     try {
-      const res = await sendAutoMail(selectedRows);
+      const res = await sendAutoMail(gapData.output_file);
       toast.success(`Notifications sent to ${res.owners_processed} owner(s)`);
       await downloadMailHtml(res.results);
-      setSelectedIndices(new Set());
     } catch (err: any) {
       toast.error(err.message || "Failed to send notifications");
     } finally {
@@ -63,7 +46,7 @@ export default function Gaps() {
   const noData = (status === "idle" || status === "loading") || gapRows.length === 0;
 
   // Show first 6 columns dynamically
-  const columns = gapData?.data?.[0] ? Object.keys(gapData.data[0]).slice(0, 6) : [];
+  const columns = gapRows[0] ? Object.keys(gapRows[0]).slice(0, 6) : [];
 
   return (
     <AppLayout>
