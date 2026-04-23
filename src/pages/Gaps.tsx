@@ -58,15 +58,20 @@ export default function Gaps() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          {gapRows.length > 0 && (
-            <Button variant="outline" size="sm" className="gap-1.5 text-[12px]" onClick={() => downloadDataAsXlsx(gapRows, "Gap_Assets.xlsx")}>
-              <Download className="h-3.5 w-3.5" /> Download XLSX
+          {gapData?.download_url && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1.5 text-[12px]"
+              onClick={() => downloadFromUrl(gapData.download_url!, gapData.output_file)}
+            >
+              <Download className="h-3.5 w-3.5" /> Download Full XLSX
             </Button>
           )}
-          {selectedIndices.size > 0 && (
+          {gapData?.output_file && gapRows.length > 0 && (
             <Button className="gap-2" onClick={handleNotify} disabled={notifying}>
               {notifying ? <Loader2 className="h-4 w-4 animate-spin" /> : <Bell className="h-4 w-4" />}
-              Notify Owners ({selectedIndices.size})
+              Notify All Owners
             </Button>
           )}
         </div>
@@ -94,6 +99,7 @@ export default function Gaps() {
             </div>
             <span className="text-[12px] text-muted-foreground">
               {gapData?.missing_ip_count} missing IPs
+              {gapRows.length < (gapData?.missing_ip_count ?? 0) && ` (preview ${gapRows.length})`}
             </span>
           </div>
 
@@ -101,12 +107,6 @@ export default function Gaps() {
             <table className="w-full text-[13px]">
               <thead>
                 <tr className="border-b border-border bg-muted/50">
-                  <th className="px-4 py-2 text-left w-10">
-                    <Checkbox
-                      checked={selectedIndices.size === filtered.length && filtered.length > 0}
-                      onCheckedChange={toggleAll}
-                    />
-                  </th>
                   {columns.map((col) => (
                     <th key={col} className="px-4 py-2 text-left font-medium text-muted-foreground whitespace-nowrap">
                       {col}
@@ -122,12 +122,6 @@ export default function Gaps() {
                     className="border-b border-border last:border-0 hover:bg-muted/30 transition-colors cursor-pointer"
                     onClick={() => setSelectedGap(row)}
                   >
-                    <td className="px-4 py-2.5" onClick={(e) => e.stopPropagation()}>
-                      <Checkbox
-                        checked={selectedIndices.has(idx)}
-                        onCheckedChange={() => toggleSelection(idx)}
-                      />
-                    </td>
                     {columns.map((col) => (
                       <td key={col} className="px-4 py-2.5 text-[12px] whitespace-nowrap">
                         {row[col] != null ? String(row[col]) : "—"}
@@ -140,7 +134,7 @@ export default function Gaps() {
                 ))}
                 {filtered.length === 0 && (
                   <tr>
-                    <td colSpan={columns.length + 2} className="px-4 py-8 text-center text-muted-foreground text-[13px]">
+                    <td colSpan={columns.length + 1} className="px-4 py-8 text-center text-muted-foreground text-[13px]">
                       No gap assets match your search
                     </td>
                   </tr>
@@ -173,27 +167,7 @@ export default function Gaps() {
                   </div>
                 ))}
                 <div className="flex gap-2 pt-4 border-t border-border">
-                  <Button
-                    className="flex-1 gap-2"
-                    size="sm"
-                    onClick={async () => {
-                      setNotifying(true);
-                      try {
-                        const res = await sendAutoMail([selectedGap]);
-                        toast.success(`Notification sent to ${res.owners_processed} owner(s)`);
-                        await downloadMailHtml(res.results);
-                      } catch (err: any) {
-                        toast.error(err.message || "Failed");
-                      } finally {
-                        setNotifying(false);
-                      }
-                    }}
-                    disabled={notifying}
-                  >
-                    {notifying ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Bell className="h-3.5 w-3.5" />}
-                    Notify Owner
-                  </Button>
-                  <Button variant="outline" size="sm" onClick={() => setSelectedGap(null)}>
+                  <Button variant="outline" size="sm" className="flex-1" onClick={() => setSelectedGap(null)}>
                     Close
                   </Button>
                 </div>
