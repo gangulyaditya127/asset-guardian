@@ -1,18 +1,18 @@
 import { useState } from "react";
 import { AppLayout } from "@/components/AppLayout";
 import { useSyncContext } from "@/context/SyncContext";
+import { downloadFromUrl } from "@/services/api";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, Download } from "lucide-react";
-import { downloadDataAsXlsx } from "@/utils/downloadXlsx";
 
 export default function Inventory() {
   const { nexposeData, sentinelData, status } = useSyncContext();
   const [search, setSearch] = useState("");
 
-  const nexposeRows = nexposeData?.data ?? [];
-  const sentinelRows = sentinelData?.data ?? [];
+  const nexposeRows = nexposeData?.preview_data ?? nexposeData?.data ?? [];
+  const sentinelRows = sentinelData?.preview_data ?? sentinelData?.data ?? [];
 
   const filteredNexpose = nexposeRows.filter(
     (a) =>
@@ -62,17 +62,24 @@ export default function Inventory() {
           <Tabs defaultValue="nexpose">
             <TabsList className="mb-4">
               <TabsTrigger value="nexpose" className="text-[13px]">
-                Nexpose ({filteredNexpose.length})
+                Nexpose ({filteredNexpose.length}{nexposeData?.total_ip_count ? ` of ${nexposeData.total_ip_count}` : ""})
               </TabsTrigger>
               <TabsTrigger value="sentinel" className="text-[13px]">
-                Sentinel ({filteredSentinel.length})
+                Sentinel ({filteredSentinel.length}{sentinelData?.total_row_count ? ` of ${sentinelData.total_row_count}` : ""})
               </TabsTrigger>
             </TabsList>
 
             <TabsContent value="nexpose">
-              <div className="mb-2 flex justify-end">
-                <Button variant="outline" size="sm" className="gap-1.5 text-[12px]" onClick={() => downloadDataAsXlsx(nexposeRows, "Nexpose_Assets.xlsx")}>
-                  <Download className="h-3.5 w-3.5" /> Download XLSX
+              <div className="mb-2 flex items-center justify-between">
+                <span className="text-[11px] text-muted-foreground">Showing preview ({nexposeRows.length} rows)</span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-1.5 text-[12px]"
+                  disabled={!nexposeData?.download_url}
+                  onClick={() => nexposeData?.download_url && downloadFromUrl(nexposeData.download_url, nexposeData.output_file)}
+                >
+                  <Download className="h-3.5 w-3.5" /> Download Full XLSX
                 </Button>
               </div>
               <div className="rounded-lg border border-border bg-card overflow-hidden">
@@ -105,9 +112,16 @@ export default function Inventory() {
             </TabsContent>
 
             <TabsContent value="sentinel">
-              <div className="mb-2 flex justify-end">
-                <Button variant="outline" size="sm" className="gap-1.5 text-[12px]" onClick={() => downloadDataAsXlsx(sentinelRows, "Sentinel_Assets.xlsx")}>
-                  <Download className="h-3.5 w-3.5" /> Download XLSX
+              <div className="mb-2 flex items-center justify-between">
+                <span className="text-[11px] text-muted-foreground">Showing preview ({sentinelRows.length} rows)</span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-1.5 text-[12px]"
+                  disabled={!sentinelData?.download_url}
+                  onClick={() => sentinelData?.download_url && downloadFromUrl(sentinelData.download_url, sentinelData.file_name)}
+                >
+                  <Download className="h-3.5 w-3.5" /> Download Full XLSX
                 </Button>
               </div>
               <div className="rounded-lg border border-border bg-card overflow-hidden overflow-x-auto">
