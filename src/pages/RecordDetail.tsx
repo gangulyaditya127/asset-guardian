@@ -87,11 +87,13 @@ export default function RecordDetail() {
   };
 
   const handleNotify = async () => {
-    const selectedRows = (gapRows as any[]).filter((_, i) => selectedIndices.has(i));
-    if (selectedRows.length === 0) return;
+    if (!rec.Gap_FileName) {
+      toast.error("No gap file associated with this record");
+      return;
+    }
     setNotifying(true);
     try {
-      const res = await sendAutoMail(selectedRows);
+      const res = await sendAutoMail(rec.Gap_FileName);
       toast.success(`Notifications sent to ${res.owners_processed} owner(s)`);
       await downloadMailHtml(res.results);
       setSelectedIndices(new Set());
@@ -129,10 +131,10 @@ export default function RecordDetail() {
               className="pl-9 h-9 text-[13px]"
             />
           </div>
-          {activeTab === "gaps" && selectedIndices.size > 0 && (
+          {activeTab === "gaps" && rec.Gap_FileName && gapRows.length > 0 && (
             <Button className="gap-2" onClick={handleNotify} disabled={notifying}>
               {notifying ? <Loader2 className="h-4 w-4 animate-spin" /> : <Bell className="h-4 w-4" />}
-              Notify Owners ({selectedIndices.size})
+              Notify All Owners
             </Button>
           )}
         </div>
@@ -294,27 +296,7 @@ export default function RecordDetail() {
                   </div>
                 ))}
                 <div className="flex gap-2 pt-4 border-t border-border">
-                  <Button
-                    className="flex-1 gap-2"
-                    size="sm"
-                    onClick={async () => {
-                      setNotifying(true);
-                      try {
-                        const res = await sendAutoMail([selectedGap]);
-                        toast.success(`Notification sent to ${res.owners_processed} owner(s)`);
-                        await downloadMailHtml(res.results);
-                      } catch (err: any) {
-                        toast.error(err.message || "Failed");
-                      } finally {
-                        setNotifying(false);
-                      }
-                    }}
-                    disabled={notifying}
-                  >
-                    {notifying ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Bell className="h-3.5 w-3.5" />}
-                    Notify Owner
-                  </Button>
-                  <Button variant="outline" size="sm" onClick={() => setSelectedGap(null)}>Close</Button>
+                  <Button variant="outline" size="sm" className="flex-1" onClick={() => setSelectedGap(null)}>Close</Button>
                 </div>
               </div>
             </>
