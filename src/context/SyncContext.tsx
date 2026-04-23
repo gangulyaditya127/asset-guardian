@@ -62,6 +62,8 @@ export function SyncProvider({ children }: { children: React.ReactNode }) {
             output_file: firstRes.database_data.Nex_FileName || "",
             site_ids_processed: [],
             ip_count: parseInt(firstRes.database_data.Nex_Count || "0", 10),
+            total_ip_count: parseInt(firstRes.database_data.Nex_Count || "0", 10),
+            preview_data: firstRes.excel_data.nex_file as any,
             data: firstRes.excel_data.nex_file as any,
           });
         }
@@ -73,7 +75,9 @@ export function SyncProvider({ children }: { children: React.ReactNode }) {
             status: "success",
             file_name: firstRes.database_data.Sent_FileName || "",
             row_count: parseInt(firstRes.database_data.Sen_Coount || "0", 10),
+            total_row_count: parseInt(firstRes.database_data.Sen_Coount || "0", 10),
             columns: cols,
+            preview_data: sentData,
             data: sentData,
           });
         }
@@ -86,6 +90,7 @@ export function SyncProvider({ children }: { children: React.ReactNode }) {
             output_file: firstRes.database_data.Gap_FileName || "",
             missing_ip_count: parseInt(firstRes.database_data.Gap_Count || "0", 10),
             total_rows_scanned: 0,
+            preview_data: firstRes.excel_data.gap_file as any,
             data: firstRes.excel_data.gap_file as any,
           });
         }
@@ -120,6 +125,8 @@ export function SyncProvider({ children }: { children: React.ReactNode }) {
           output_file: firstRes.database_data.Nex_FileName || "",
           site_ids_processed: [],
           ip_count: parseInt(firstRes.database_data.Nex_Count || "0", 10),
+          total_ip_count: parseInt(firstRes.database_data.Nex_Count || "0", 10),
+          preview_data: firstRes.excel_data.nex_file as any,
           data: firstRes.excel_data.nex_file as any,
         });
       }
@@ -131,7 +138,9 @@ export function SyncProvider({ children }: { children: React.ReactNode }) {
           status: "success",
           file_name: firstRes.database_data.Sent_FileName || "",
           row_count: parseInt(firstRes.database_data.Sen_Coount || "0", 10),
+          total_row_count: parseInt(firstRes.database_data.Sen_Coount || "0", 10),
           columns: cols,
+          preview_data: sentData,
           data: sentData,
         });
       }
@@ -144,6 +153,7 @@ export function SyncProvider({ children }: { children: React.ReactNode }) {
           output_file: firstRes.database_data.Gap_FileName || "",
           missing_ip_count: parseInt(firstRes.database_data.Gap_Count || "0", 10),
           total_rows_scanned: 0,
+          preview_data: firstRes.excel_data.gap_file as any,
           data: firstRes.excel_data.gap_file as any,
         });
       }
@@ -171,8 +181,8 @@ export function SyncProvider({ children }: { children: React.ReactNode }) {
       // Step 4: Save record
       await createRecord({
         Status: "success",
-        Nex_Count: String(nexpRes.ip_count),
-        Sen_Coount: String(sentRes.row_count),
+        Nex_Count: String(nexpRes.total_ip_count ?? nexpRes.ip_count ?? 0),
+        Sen_Coount: String(sentRes.total_row_count ?? sentRes.row_count ?? 0),
         Gap_Count: String(compareRes.missing_ip_count),
         Nex_FileName: nexpRes.output_file,
         Sent_FileName: sentRes.file_name,
