@@ -12,14 +12,13 @@ export interface NexposeSiteSummary {
 export interface NexposeApiResponse {
   status: string;
   output_file: string;
-  download_url: string;
-  total_ip_count: number;
-  preview_count: number;
+  download_url?: string;
+  total_ip_count?: number;
+  preview_count?: number;
   site_summary?: NexposeSiteSummary;
-  // legacy / convenience
   site_ids_processed?: number[];
   ip_count?: number;
-  preview_data: Array<{
+  preview_data?: Array<{
     "Defined IP": string;
     "Site ID": number;
     "Site Name": string;
@@ -32,11 +31,11 @@ export interface NexposeApiResponse {
 export interface SentinelApiResponse {
   status: string;
   file_name: string;
-  download_url: string;
-  total_row_count: number;
-  preview_count: number;
+  download_url?: string;
+  total_row_count?: number;
+  preview_count?: number;
   columns: string[];
-  preview_data: Array<Record<string, any>>;
+  preview_data?: Array<Record<string, any>>;
   /** @deprecated */
   row_count?: number;
   /** @deprecated use preview_data */
@@ -49,11 +48,11 @@ export interface CompareApiResponse {
   sentinel_file: string;
   nexpose_file: string;
   output_file: string;
-  download_url: string;
+  download_url?: string;
   missing_ip_count: number;
   total_rows_scanned: number;
   total_count?: number;
-  preview_data: Array<Record<string, any>>;
+  preview_data?: Array<Record<string, any>>;
   /** @deprecated use preview_data */
   data?: Array<Record<string, any>>;
 }
