@@ -2,25 +2,45 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8004
 
 // ── Nexpose / Sentinel / Compare ──
 
+export interface NexposeSiteSummary {
+  total: number;
+  successful: number[];
+  failed: Array<{ site_id: number; error: string }>;
+  no_data: number[];
+}
+
 export interface NexposeApiResponse {
   status: string;
   output_file: string;
-  site_ids_processed: number[];
-  ip_count: number;
-  data: Array<{
+  download_url: string;
+  total_ip_count: number;
+  preview_count: number;
+  site_summary?: NexposeSiteSummary;
+  // legacy / convenience
+  site_ids_processed?: number[];
+  ip_count?: number;
+  preview_data: Array<{
     "Defined IP": string;
     "Site ID": number;
     "Site Name": string;
     Owner: string;
   }>;
+  /** @deprecated use preview_data */
+  data?: Array<Record<string, any>>;
 }
 
 export interface SentinelApiResponse {
   status: string;
   file_name: string;
-  row_count: number;
+  download_url: string;
+  total_row_count: number;
+  preview_count: number;
   columns: string[];
-  data: Array<Record<string, any>>;
+  preview_data: Array<Record<string, any>>;
+  /** @deprecated */
+  row_count?: number;
+  /** @deprecated use preview_data */
+  data?: Array<Record<string, any>>;
 }
 
 export interface CompareApiResponse {
@@ -29,9 +49,13 @@ export interface CompareApiResponse {
   sentinel_file: string;
   nexpose_file: string;
   output_file: string;
+  download_url: string;
   missing_ip_count: number;
   total_rows_scanned: number;
-  data: Array<Record<string, any>>;
+  total_count?: number;
+  preview_data: Array<Record<string, any>>;
+  /** @deprecated use preview_data */
+  data?: Array<Record<string, any>>;
 }
 
 export interface SendMailResponse {
@@ -73,14 +97,28 @@ export async function compareAssets(
   return res.json();
 }
 
-export async function sendAutoMail(data: Array<Record<string, any>>): Promise<SendMailResponse> {
-  const res = await fetch(`${API_BASE_URL}/send-auto-mail`, {
+export async function sendAutoMail(excelFile: string): Promise<SendMailResponse> {
+  const params = new URLSearchParams({ excel_file: excelFile });
+  const res = await fetch(`${API_BASE_URL}/send-auto-mail?${params}`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ data }),
   });
   if (!res.ok) throw new Error(`Mail API failed: ${res.statusText}`);
   return res.json();
+}
+
+/** Trigger a browser download from a backend download_url (relative path). */
+export function downloadFromUrl(downloadUrl: string, filename?: string) {
+  const url = downloadUrl.startsWith("http")
+    ? downloadUrl
+    : `${API_BASE_URL}${downloadUrl.startsWith("/") ? "" : "/"}${downloadUrl}`;
+  const a = document.createElement("a");
+  a.href = url;
+  if (filename) a.download = filename;
+  a.target = "_blank";
+  a.rel = "noopener";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
 }
 
 // ── History Records ──
