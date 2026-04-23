@@ -10,8 +10,8 @@ export default function Dashboard() {
   const syncing = status === "syncing";
   const loading = status === "loading";
 
-  const nexposeCount = nexposeData?.ip_count ?? 0;
-  const sentinelCount = sentinelData?.row_count ?? 0;
+  const nexposeCount = nexposeData?.total_ip_count ?? nexposeData?.ip_count ?? 0;
+  const sentinelCount = sentinelData?.total_row_count ?? sentinelData?.row_count ?? 0;
   const gapCount = gapData?.missing_ip_count ?? 0;
 
   return (
@@ -105,7 +105,7 @@ export default function Dashboard() {
               Sites: {nexposeData?.site_ids_processed.join(", ")}
             </p>
             <p className="text-[12px] text-muted-foreground">
-              Total IPs: <span className="font-semibold text-foreground">{nexposeData?.ip_count}</span>
+              Total IPs: <span className="font-semibold text-foreground">{nexposeCount}</span>
             </p>
           </div>
           <div className="rounded-lg border border-border bg-card p-5">
